@@ -1,4 +1,5 @@
-# 第五章 React 路由
+# React 路由
+
 ## 一、相关理解
 
 ### SPA
@@ -133,4 +134,41 @@ import {Switch, Route} from 'react-router-dom'
     public/index.html中css引入时，绝对路径以：  %PUBLIC_URL%   开头，代表public文件夹
 解决方法三：（不常用）
     index.js中引入{HashRouter},而非{BrowserRouter}.
-  
+
+## 七、路由的模糊匹配和严格匹配
+
+* 模糊匹配：
+  只要to输入的路径与目标路径开头一致（包含目标路径），后面再接不同的也算匹配
+* 严格匹配：
+  必须完全一致
+
+除非页面出现问题，否则不轻易开启严格匹配，因为有时开启会导致无法匹配二级路由。
+开启严格匹配的方法：
+```js
+  {/* 注册路由 */}
+    <Switch>
+      <Route exact={true} path="/about" component={About}/>
+      <Route exact={true} path="/home" component={Home}/>
+    </Switch>
+```
+  (仅写exact也是可以的)
+
+## 八、Redirect的使用
+1. 一般写在所有路由注册的最下方，switch之内，当所有路由都无法匹配时，跳转到Redirect指定的路由。
+2. 具体编码：
+引入：
+```js
+import {Switch, Route, Redirect} from 'react-router-dom'
+```
+使用：
+  ```jsx
+    <Switch>
+      <Route path="/about" component={About}/>
+      <Route path="/home" component={Home}/>
+      <Redirect to="/about"/>
+    </Switch>
+  ``` 
+
+## 九、嵌套路由
+1. 注册子路由时要写上父路由的path值
+2. 路由的匹配是按照注册路由的顺序进行的
