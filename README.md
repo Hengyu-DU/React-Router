@@ -1,70 +1,136 @@
-# Getting Started with Create React App
+# 第五章 React 路由
+## 一、相关理解
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### SPA
+1. 单页Web应用（Single Page Web Application SPA）
+2. 整个应用只有**一个完整的页面**
+3. 点击页面中的链接**不会刷新**页面，只会做页面的**局部更新**
+4. 数据都需要通过ajax请求获取，并在前端异步展现
 
-## Available Scripts
+### 路由
+1. 什么是路由？
+    1. 一个路由就是一个映射关系（key:value）
+    2. key为路径，value可能是function或component
+2. 路由分类
+    1. 后端路由：
+       - 理解： value 是 function, 用来处理客户端提交的请求。
+       - 注册路由：router.get(path, function(req, res))
+       - 工作过程：当node接收到一个请求时，根据请求路径找到匹配的路由，调用路由中的函数来处理请求，返回响应数据。
+    2. 前端路由：
+       - 浏览器端路由，value是component，用于展示页面内容
+       - 注册路由：<Route path="/test" component={Test}>
+       - 工作过程：当浏览器的path变成/test时，当前路由组件就会变成Test组件
 
-In the project directory, you can run:
+### React-router（-DOM） 的理解
+1. react 的一个插件库
+    - 一共有三个库 web\native\anywhere
+2. 专门用来实现一个SPA应用
+3. 基于react的web项目基本都会用到这个库。
 
-### `npm start`
+## 二、路由的基本使用
+1. 明确好界面中的导航区、展示区
+2. 导航区的a标签改为link标签 => 编写路由链接
+    <Link to="/abc">Demo</Link>
+3. 展示区写Route标签进行路径的匹配 => 注册路由
+    <Route path='/abc' component={Demo}/>
+4. \<App> 的最外侧包裹了一个<BrowserRouter>或<HashRouter>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 三、路由组件与一般组件
+1. 写法不同：
+    * 一般组件：<Demo/>
+    * 路由组件：<Route path='/demo' component={Demo}/>
+2. 存放位置不同：
+    * 一般组件：components
+    * 路由组件：pages
+3. 接收到的props不同：
+    * 一般组件：写组件标签时传递了什么，就能收到什么
+    * 路由组件：接收到三个固定的属性：
+    ```
+    history:
+        go: ƒ go(n)
+        goBack: ƒ goBack()
+        goForward: ƒ goForward()
+        push: ƒ push(path, state)
+        replace: ƒ replace(path, state)
+    location:
+        pathname: "/about"
+        search: ""
+        state: undefined
+    match:
+        params: {}
+        path: "/about"
+        url: "/about"
+    ```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 四、NavLink的使用
 
-### `npm test`
+### 1. 基本使用：
+首先引入：
+import {NavLink} from 'react-router-dom'
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```jsx
+ <NavLink activeClassName='atguigu' className='list-group-item' to="/about">About</NavLink>
+ <NavLink activeClassName='atguigu' className='list-group-item' to="/home">Home</NavLink>
+```
+* activeClassName属性用来指定active状态下的类名，默认叫active
+* 样式如果被bootstrap覆盖，则加 !important ：
 
-### `npm run build`
+```css
+.atguigu{
+        background-color: cornflowerblue !important;
+        color: darkblue !important;
+        font-weight: bold !important;
+      }
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 2. 封装NavLink
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+封装一个MyNavLink：
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. index.js 中引入 NavLink
+```jsx
+  import React, { Component } from 'react'
+  import { NavLink } from 'react-router-dom'
 
-### `npm run eject`
+  export default class MyNavLink extends Component {
+    render() {
+      return (
+        <NavLink activeClassName='atguigu' className='list-group-item' {...this.props} />
+      )
+    }
+  }
+```
+* {...this.props} 作为一个对象展开，其中包括children属性（标签体的内容，this.props.children）
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+2. App.jsx 中：
+只需将不同的部份以props的形式传入，即可完成封装组件的调用。
+```js
+  <MyNavLink to="/about">About</MyNavLink>
+  <MyNavLink to="/home">Home</MyNavLink>
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## 五、Switch的使用
+用于解决路由单一匹配的效率问题，在相同路由下只会匹配一次。
+引入Switch：
+import {Switch, Route} from 'react-router-dom'
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+用<Switch>标签包裹注册的路由：
+```jsx
+  {/* 注册路由 */}
+    <Switch>
+      <Route path="/about" component={About}/>
+      <Route path="/home" component={Home}/>
+      <Route path="/home" component={Test}/>
+    </Switch>
+```
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## 六、解决样式丢失的问题
+在路由地址添加多级路径时，二次刷新网页会导致样式丢失，
+解决方法一：
+    public/index.html中css引入时，去掉绝对地址的./，直接用/
+解决方法二：
+    public/index.html中css引入时，绝对路径以：  %PUBLIC_URL%   开头，代表public文件夹
+解决方法三：（不常用）
+    index.js中引入{HashRouter},而非{BrowserRouter}.
+  
