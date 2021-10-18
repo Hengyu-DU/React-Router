@@ -7,8 +7,8 @@ export default class News extends Component {
 
   componentDidMount(){
     setTimeout(() => {
-      this.props.history.push('/home/message')
       clearInterval(timer)
+      this.props.history.push('/home/message')
     }, 4000);
 
     const timer = setInterval(() => {

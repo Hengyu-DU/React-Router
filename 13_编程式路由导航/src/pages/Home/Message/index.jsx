@@ -23,6 +23,16 @@ export default class Message extends Component {
     this.props.history.replace(`/home/message/detail`,{id,title})
   }
 
+  back = ()=>{
+    this.props.history.goBack()
+  }
+  forward = ()=>{
+    this.props.history.goForward()
+  }
+  go = ()=>{
+    this.props.history.go(2) // 前进2
+    // this.props.history.go(-2) // 回退2
+  }
 
   render() {
     const {messageArr} = this.state
@@ -60,7 +70,9 @@ export default class Message extends Component {
           {/* state参数无需接收声明 */}
           <Route path="/home/message/detail" component={Detail}/>
 
-
+          <button onClick={this.back}>后退</button> &nbsp;
+          <button onClick={this.forward}>前进</button> &nbsp;
+          <button onClick={this.go}></button>
       </div>
 
 

@@ -10,20 +10,6 @@ export default class Message extends Component {
       {id:'03',title:'message003'},
     ]
   }
-
-  pushShow = (id, title) => {
-    // this.props.history.push(`/home/message/detail/${id}/${title}`)
-    // this.props.history.push(`/home/message/detail/?id=${id}&title=${title}`)
-    this.props.history.push(`/home/message/detail`,{id,title})
-  }
-
-  replaceShow = (id, title) => {
-    // this.props.history.replace(`/home/message/detail/${id}/${title}`)
-    // this.props.history.replace(`/home/message/detail/?id=${id}&title=${title}`)
-    this.props.history.replace(`/home/message/detail`,{id,title})
-  }
-
-
   render() {
     const {messageArr} = this.state
     return (
@@ -43,8 +29,6 @@ export default class Message extends Component {
                   {/* 向路由组件传递state参数 */}
                   <Link to={{pathname:"/home/message/detail", state:{id:msgObj.id,title:msgObj.title}}}>{msgObj.title}</Link> &nbsp;&nbsp;
 
-                  <button onClick={()=>this.pushShow(msgObj.id,msgObj.title)}>push查看</button>
-                  <button onClick={()=>this.replaceShow(msgObj.id,msgObj.title)}>replace查看</button>
                 </li>
               )
             })
@@ -59,11 +43,7 @@ export default class Message extends Component {
 
           {/* state参数无需接收声明 */}
           <Route path="/home/message/detail" component={Detail}/>
-
-
       </div>
-
-
     )
   }
 }

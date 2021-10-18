@@ -172,3 +172,73 @@ import {Switch, Route, Redirect} from 'react-router-dom'
 ## 九、嵌套路由
 1. 注册子路由时要写上父路由的path值
 2. 路由的匹配是按照注册路由的顺序进行的
+
+## 十、给路由组件传递参数
+
+* *Ajax传递参数的方法：
+  1. query
+  2. params
+  3. body(包括 
+          urlencoded => key=value&key=value
+          json)
+
+### (1) params参数(props.match.params)
+  - 路由链接（携带参数）：`<Link to='/demo/test/tom/18'>详情</Link>`
+  - 注册路由（声明接收）: `<Route path="/demo/test/:name/:age" component={Test}/>`
+  - 接收参数： const {name, age} = this.props.match.params
+
+### (2) search参数(props.location.search)
+  - 路由链接（携带参数）：`<Link to='/demo/test?name=to&age=18'>详情</Link>`
+  - 注册路由（无需声明，正常注册即可）：`<Route path='/demo/test' component={Test}/>`
+  - 接收参数：const {search} = this.props.location
+  - 备注：获取到的search是urlencoded编码字符串，需要借助querystring解析
+  ```js
+  import qs from 'querystring'  
+
+  qs.stringify({name:'A',age:'18'})  // 结果为   name=A&age=18
+  qs.parse('name=A&age=18') // 结果为  {name:'A',age:'18'}
+  ```
+
+### (3) state参数(props.location.state)
+  - 路由链接（携带参数）：`<Link to={{path:"/demo/test", state:{name:'tom',age:18}}}>详情</Link>`
+  - 注册路由（无需声明，正常注册即可）：`<Route path='/demo/test' component={Test}/>`
+  - 接收参数：const {state} = this.props.location
+  - 备注：刷新也可保留住参数！！！（删除浏览器缓存和历史记录后则会失效）
+
+## 十一、replace与push
+如果开启了replace模式，则新点击的路由组件会替换栈顶的历史记录，将不可以回退。
+开启方式：在路由组件中加 replace={true} 或 直接 replace
+```js
+      <MyNavLink replace to="/home/message">Message</MyNavLink>
+```
+
+## 十二、编程式路由导航
+借助this.props.history对象上的API对操作路由跳转、前进、后退
+  - this.props.history.push(path[,state])
+  - this.props.history.replace(path[,state])
+  - this.props.history.goBack()
+  - this.props.history.goForward()
+  - this.props.history.go(n)
+
+## 十三、withRouter()
+withRouter()函数可以加工一般组件，让一般组件具备路由组件所特有的API，其返回值是一个新组件
+引入：
+```
+import {withRouter} from 'react-router-dom'
+```
+在需要加工的一般组件内使用：
+```
+export default withRouter(Header)
+```
+
+## 十四、BrowserRouter与HashRouter的区别
+  1. 底层原理不一样：
+    - BrowserRouter使用的是H5的history API，不兼容IE9及以下版本。
+    - HashRouter使用的是URL的哈希值
+  2. path表现形式不一样
+    - BrowserRouter的路径中没有#
+    - HashRouter的路径包含#
+  3. 刷新对路由state参数的影响
+    - （1）BrowserRouter无影响，因为state保存在history对象中
+    - （2）HashRouter刷新后会导致路由state参数的丢失！！！
+  4. 备注：HashRouter可以用于解决一些路径错误相关的问题。
