@@ -13,16 +13,18 @@
 
     <script src="https://cdn.bootcdn.net/ajax/libs/history/4.7.2/history.js"></script>
     <script type="text/javascript">
-      // let history = History.createBrowserHistory() // 方法一，直接使用H5推出的history身上的API
-      let history = History.createHashHistory() // 方法二，hash值（锚点），兼容性好，无缝切换
+      // 方法一，直接使用H5推出的history身上的API
+
+      // 方法二，hash值（锚点），兼容性好，无缝切换
+      let history = History.createHashHistory() 
       
       function push (path){
         history.push(path)
-        return false
+        return true
       }
 
       function replace (path) {
-        history.replace(path)
+        history.replace(path) // 直接替换 无记录
       }
 
       function back(){

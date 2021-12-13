@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import qs from 'querystring'
 
 // 模拟服务器传回的数据
 const DetailData = [
@@ -19,6 +20,7 @@ export default class Detail extends Component {
 
     // 接收state参数
     const {id,title} = this.props.location.state || {}
+
     const result = DetailData.find((detailObj)=>{
       return detailObj.id === id
     }) || {}
